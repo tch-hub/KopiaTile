@@ -85,7 +85,68 @@ end
 return (abs(x) + abs(y)) % 5 -- 0から4までの値になるように調整
 ```
 
+**例4: `for` ループを使ったグリッド（網目模様）**
+
+```lua
+-- -4 から 4 まで、2 刻みでループします
+for i = -4, 4, 2 do
+    if x == i or y == i then
+        return BLUE -- 等間隔で青色の直線を引く
+    end
+end
+
+return TRANSPARENT
+```
+
+**例5: 円を描く（中心からの距離による条件分岐）**
+
+```lua
+-- 中心 (0, 0) からの距離の2乗を計算します
+local dist_sq = x * x + y * y
+
+-- 半径が2以下の円の中（距離の2乗が4以下）を赤く塗る
+if dist_sq <= 4 then
+    return RED
+else
+    return TRANSPARENT
+end
+```
+
+**例6: 円形のグラデーションパターン**
+
+```lua
+-- 中心からの距離に応じて色を順番に切り替えるグラデーション
+local dist_sq = x * x + y * y
+
+if dist_sq <= 1 then
+    return WHITE  -- 中心付近
+elseif dist_sq <= 4 then
+    return RED    -- ひとつ外側
+elseif dist_sq <= 9 then
+    return BLUE   -- さらに外側
+else
+    return BLACK  -- 一番外側
+end
+```
+
+**例7: `for` ループを使った波紋（同心円）**
+
+```lua
+local dist_sq = x * x + y * y
+
+-- 半径1〜4の円周を描く
+for r = 1, 4 do
+    local r_sq = r * r
+    -- 距離の2乗が半径の2乗と完全にピタリと一致するピクセルを抽出する
+    if dist_sq == r_sq then
+        return BLUE
+    end
+end
+
+return TRANSPARENT
+```
+
 ## 注意点
 
 - 言語は **Lua** として評価されます。関数定義やテーブル、標準ライブラリ（`math`など）が一部利用可能です。
-- Luaエンジンは `wasmoon` を使用しており、無限ループなどが起こるとブラウザがブロックされる可能性があるため、実行時は注意してください。
+- スクリプトはWeb Worker（バックグラウンド）上で非同期実行されるため、無限ループなどが生じてもブラウザはフリーズしません。ただし、一定時間（約2秒）実行が完了しない場合は強制終了されエラーとなります。

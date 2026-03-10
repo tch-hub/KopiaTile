@@ -26,25 +26,69 @@
 	<Card
 		class="relative flex min-h-[400px] flex-1 flex-col items-center justify-center overflow-hidden bg-muted/30 p-6 shadow-inner"
 	>
-		<div class="relative z-10 grid grid-cols-[auto_320px] grid-rows-[auto_320px]">
-			<!-- Empty top-left corner -->
-			<div></div>
-
-			<!-- X axis labels (top) -->
-			<div class="flex pb-2 font-mono text-xs text-muted-foreground/70">
-				{#each axisLabels as label (label)}
-					<div class="flex-1 text-center">{label}</div>
-				{/each}
-			</div>
-
+		<div class="relative z-10 grid grid-cols-[auto_320px] grid-rows-[320px_auto]">
 			<!-- Y axis labels (left) -->
-			<div class="flex flex-col pr-2 font-mono text-xs text-muted-foreground/70">
+			<div
+				class="relative col-start-1 row-start-1 flex flex-col font-mono text-sm font-medium text-muted-foreground"
+			>
+				<!-- Y axis line -->
+				<div class="absolute top-0 right-0 bottom-0 w-[2px] bg-muted-foreground/40"></div>
+				<!-- Y axis arrow -->
+				<div
+					class="absolute -top-[5px] right-[-3px] h-0 w-0 border-x-[4px] border-b-[6px] border-x-transparent border-b-muted-foreground/40"
+				></div>
+				<!-- y label -->
+				<div
+					class="absolute -top-6 right-2 font-sans text-base font-bold text-muted-foreground italic"
+				>
+					y
+				</div>
+
 				{#each yAxisLabels as label (label)}
-					<div class="flex flex-1 items-center justify-end">{label}</div>
+					<div class="relative flex flex-1 items-center justify-end">
+						<span class="mr-3">{label}</span>
+						<!-- Tick mark -->
+						<div
+							class="absolute top-1/2 right-[-2px] h-1.5 w-1.5 -translate-y-1/2 rounded-full bg-muted-foreground/60"
+						></div>
+					</div>
 				{/each}
 			</div>
 
-			<div class="relative flex h-[320px] w-[320px] items-center justify-center">
+			<!-- Empty bottom-left corner -->
+			<div class="relative col-start-1 row-start-2"></div>
+
+			<!-- X axis labels (bottom) -->
+			<div
+				class="relative col-start-2 row-start-2 flex font-mono text-sm font-medium text-muted-foreground"
+			>
+				<!-- X axis line -->
+				<div class="absolute top-0 right-0 left-0 h-[2px] bg-muted-foreground/40"></div>
+				<!-- X axis arrow -->
+				<div
+					class="absolute top-[-3px] -right-[5px] h-0 w-0 border-y-[4px] border-l-[6px] border-y-transparent border-l-muted-foreground/40"
+				></div>
+				<!-- x label -->
+				<div
+					class="absolute top-2 -right-2 font-sans text-base font-bold text-muted-foreground italic"
+				>
+					x
+				</div>
+
+				{#each axisLabels as label (label)}
+					<div class="relative flex flex-1 items-start justify-center">
+						<span class="mt-2">{label}</span>
+						<!-- Tick mark -->
+						<div
+							class="absolute top-[-2px] left-1/2 h-1.5 w-1.5 -translate-x-1/2 rounded-full bg-muted-foreground/60"
+						></div>
+					</div>
+				{/each}
+			</div>
+
+			<div
+				class="relative col-start-2 row-start-1 flex h-[320px] w-[320px] items-center justify-center"
+			>
 				{#if error}
 					<div
 						class="absolute inset-0 z-30 flex flex-col items-center justify-center rounded-lg border border-destructive bg-background/80 p-4 text-center backdrop-blur-sm"
