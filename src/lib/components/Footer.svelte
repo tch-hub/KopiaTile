@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
-	import { Play, RotateCcw, Globe } from '@lucide/svelte';
-	import * as m from '$lib/paraglide/messages.js';
+	import { Globe } from '@lucide/svelte';
 	import { setLocale, getLocale } from '$lib/paraglide/runtime.js';
 
 	function toggleLanguage() {

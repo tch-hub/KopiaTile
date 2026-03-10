@@ -15,14 +15,6 @@
 	let monaco: typeof Monaco | null = null;
 	let decorations: string[] = [];
 
-	const COLOR_MAP = {
-		TRANSPARENT: 'text-gray-500 italic',
-		WHITE: 'text-white font-bold',
-		BLACK: 'text-black bg-white/80 rounded px-0.5 font-bold',
-		RED: 'text-[#ff5555] font-bold',
-		BLUE: 'text-[#55aaff] font-bold'
-	} as const;
-
 	function updateColorHighlights() {
 		if (!editor || !monaco) return;
 
@@ -37,7 +29,7 @@
 		while ((match = colorRegex.exec(text)) !== null) {
 			const startPos = model.getPositionAt(match.index);
 			const endPos = model.getPositionAt(match.index + match[0].length);
-			const color = match[1] as keyof typeof COLOR_MAP;
+			const color = match[1].toLowerCase();
 
 			newDecorations.push({
 				range: new monaco.Range(
@@ -47,7 +39,7 @@
 					endPos.column
 				),
 				options: {
-					inlineClassName: `kopiatile-highlight-${color.toLowerCase()}`
+					inlineClassName: `kopiatile-highlight-${color}`
 				}
 			});
 		}
@@ -59,8 +51,8 @@
 		monaco = await import('monaco-editor');
 		const editorWorker = await import('monaco-editor/esm/vs/editor/editor.worker?worker');
 
-		(self as any).MonacoEnvironment = {
-			getWorker: function (_moduleId: any, label: string) {
+		(self as unknown as { MonacoEnvironment: unknown }).MonacoEnvironment = {
+			getWorker: function () {
 				return new editorWorker.default();
 			}
 		};

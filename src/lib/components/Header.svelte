@@ -2,7 +2,6 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Sun, Moon } from '@lucide/svelte';
 	import { onMount } from 'svelte';
-	import * as m from '$lib/paraglide/messages.js';
 
 	let isDarkMode = $state(false);
 

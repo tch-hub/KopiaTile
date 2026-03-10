@@ -24,7 +24,6 @@ return 0`);
 	});
 
 	$effect(() => {
-		const currentCode = code;
 		clearTimeout(debounceTimer);
 		debounceTimer = setTimeout(() => {
 			parseAndRun();
@@ -60,9 +59,10 @@ return 0`);
 		try {
 			await engine.compile(code);
 			grid = await engine.evaluate();
-		} catch (error: any) {
-			console.error('Execution error:', error);
-			const msg = String(error.message || error);
+		} catch (error: unknown) {
+			const errorMessage = error instanceof Error ? error.message : String(error);
+			console.error('Execution error:', errorMessage);
+			const msg = String(errorMessage);
 			const match = msg.match(/\[string "..."\]:(\d+):(.*)/);
 			if (match) {
 				const line = parseInt(match[1], 10) - 2;

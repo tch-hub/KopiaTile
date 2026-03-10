@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import * as m from '$lib/paraglide/messages.js';
+	import { localizeHref } from '$lib/paraglide/runtime';
 
 	const status = $derived(page.status);
 	const error = $derived(page.error);
@@ -45,7 +46,7 @@
 
 	<div class="flex flex-col gap-4 sm:flex-row">
 		<a
-			href="/"
+			href={localizeHref('/')}
 			class="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 		>
 			{m.error_page_back_home()}

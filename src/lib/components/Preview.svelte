@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Card } from '$lib/components/ui/card/index.js';
 	import { Play } from '@lucide/svelte';
-	import { Button } from '$lib/components/ui/button/index.js';
 	import * as m from '$lib/paraglide/messages.js';
 	import { GRID_RADIUS, GRID_SIZE } from '$lib/config';
 
@@ -31,14 +30,14 @@
 
 			<!-- X axis labels (top) -->
 			<div class="flex pb-2 font-mono text-xs text-muted-foreground/70">
-				{#each axisLabels as label}
+				{#each axisLabels as label (label)}
 					<div class="flex-1 text-center">{label}</div>
 				{/each}
 			</div>
 
 			<!-- Y axis labels (left) -->
 			<div class="flex flex-col pr-2 font-mono text-xs text-muted-foreground/70">
-				{#each yAxisLabels as label}
+				{#each yAxisLabels as label (label)}
 					<div class="flex flex-1 items-center justify-end">{label}</div>
 				{/each}
 			</div>
@@ -49,8 +48,8 @@
 						class="pointer-events-none z-20 grid h-full w-full"
 						style="grid-template-columns: repeat({GRID_SIZE}, 1fr); grid-template-rows: repeat({GRID_SIZE}, 1fr);"
 					>
-						{#each grid as row, y}
-							{#each row as colorIndex, x}
+						{#each grid as row, y (y)}
+							{#each row as colorIndex, x (x)}
 								<div
 									style="background-color: {colorIndex === 0
 										? 'transparent'
@@ -58,7 +57,7 @@
 									class="flex h-full w-full items-center justify-center transition-all duration-300 select-none {colorIndex ===
 									0
 										? ''
-										: 'z-10 scale-[0.92] rounded-md border border-black/10 shadow-[inset_0_2px_4px_rgba(255,255,255,0.5),inset_0_-3px_4px_rgba(0,0,0,0.3),0_2px_5px_rgba(0,0,0,0.4)]'}"
+										: 'z-10 scale-[0.92] rounded-md border border-black/10 shadow-[inset_0_2px_4px_rgba(255,255,255,0.5),inset_0_-3px_4_rgba(0,0,0,0.3),0_2px_5px_rgba(0,0,0,0.4)]'}"
 								></div>
 							{/each}
 						{/each}
@@ -74,8 +73,7 @@
 		</div>
 	</Card>
 
-	<!-- Status display -->
-	<!-- <div class="flex items-center justify-between px-2 pt-2">
+	<div class="flex items-center justify-between px-2 pt-2">
 		<div class="flex space-x-5">
 			<div class="flex items-center gap-2 text-sm font-medium">
 				<span class="text-muted-foreground">{m.match_rate_label()}</span>
@@ -112,5 +110,5 @@
 				>{isRunning ? 'Running' : m.status_idle()}</span
 			>
 		</div>
-	</div> -->
+	</div>
 </div>
