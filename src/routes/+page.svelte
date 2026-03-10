@@ -24,9 +24,10 @@ return 0`);
 	});
 
 	$effect(() => {
+		const _code = code; // codeの変更をSvelte 5のリアクティビティに追跡させる
 		clearTimeout(debounceTimer);
 		debounceTimer = setTimeout(() => {
-			parseAndRun();
+			parseAndRun(_code);
 		}, 500);
 	});
 
@@ -52,12 +53,12 @@ return 0`);
 		return m.lua_error_default({ message: msg });
 	}
 
-	async function parseAndRun() {
+	async function parseAndRun(currentCode: string = code) {
 		if (!engine) return;
 		isRunning = true;
 		editorError = null;
 		try {
-			await engine.compile(code);
+			await engine.compile(currentCode);
 			grid = await engine.evaluate();
 		} catch (error: unknown) {
 			const errorMessage = error instanceof Error ? error.message : String(error);
