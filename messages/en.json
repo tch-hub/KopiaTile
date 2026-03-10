@@ -1,4 +1,15 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
-	"hello_world": "Hello, {name} from en!"
+	"hello_world": "Hello, {name} from en!",
+	"app_name": "CodePix",
+	"code_editor_title": "Code Editor",
+	"problem_tag": "Problem 1: Paint the top row red",
+	"preview_title": "Preview",
+	"problem_description": "Paint all pixels in the top row (y=0) red.",
+	"match_rate_label": "Match Rate:",
+	"code_length_label": "Code Length:",
+	"status_idle": "Idle",
+	"button_run": "Run",
+	"button_reset": "Reset",
+	"current_mode_label": "Current Mode:"
 }
