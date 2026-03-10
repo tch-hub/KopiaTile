@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Editor from '$lib/components/Editor.svelte';
 	import Preview from '$lib/components/Preview.svelte';
+	import DocsSidebar from '$lib/components/DocsSidebar.svelte';
+	import { FileText } from '@lucide/svelte';
 	import { KopiaTileEngine } from '$lib/engine/KopiaTileEngine.js';
 	import { onMount } from 'svelte';
 	import * as m from '$lib/paraglide/messages.js';
@@ -16,6 +18,7 @@ return 0`);
 	let engine: KopiaTileEngine | null = null;
 	let debounceTimer: ReturnType<typeof setTimeout>;
 	let editorError: { line: number; message: string } | null = $state(null);
+	let isDocsOpen = $state(false);
 
 	onMount(() => {
 		engine = new KopiaTileEngine(16, 16);
@@ -88,7 +91,18 @@ return 0`);
 </script>
 
 <!-- Main -->
-<main class="mx-auto w-full max-w-5xl flex-1 space-y-6 px-4 py-8">
+<main class="relative mx-auto w-full max-w-5xl flex-1 space-y-6 px-4 py-8">
+	<!-- ヘッダー下部などの配置 -->
+	<div class="flex justify-end">
+		<button
+			class="flex items-center gap-2 rounded-md bg-secondary px-3 py-1.5 text-sm font-medium text-secondary-foreground hover:bg-secondary/80"
+			onclick={() => (isDocsOpen = true)}
+		>
+			<FileText class="h-4 w-4" />
+			Documentation
+		</button>
+	</div>
+
 	<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 		<!-- 左カラム: コードエディタエリア -->
 		<Editor bind:code error={editorError} />
@@ -97,3 +111,5 @@ return 0`);
 		<Preview {grid} {isRunning} {code} error={editorError} />
 	</div>
 </main>
+
+<DocsSidebar isOpen={isDocsOpen} onClose={() => (isDocsOpen = false)} />

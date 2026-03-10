@@ -12,8 +12,8 @@ const config = {
 			'@/*': './src/lib/*'
 		}
 	},
-	preprocess: [mdsvex()],
-	extensions: ['.svelte', '.svx']
+	preprocess: [mdsvex({ extensions: ['.svelte.md', '.md', '.svx'] })],
+	extensions: ['.svelte', '.svx', '.md']
 };
 
 export default config;
