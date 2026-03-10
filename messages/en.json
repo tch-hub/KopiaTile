@@ -3,13 +3,19 @@
 	"hello_world": "Hello, {name} from en!",
 	"app_name": "CodePix",
 	"code_editor_title": "Code Editor",
-	"problem_tag": "Problem 1: Paint the top row red",
 	"preview_title": "Preview",
-	"problem_description": "Paint all pixels in the top row (y=0) red.",
 	"match_rate_label": "Match Rate:",
 	"code_length_label": "Code Length:",
 	"status_idle": "Idle",
 	"button_run": "Run",
 	"button_reset": "Reset",
-	"current_mode_label": "Current Mode:"
+	"current_mode_label": "Current Mode:",
+	"terminal_title": "Terminal",
+	"terminal_no_errors": "No errors to display. Ready to compile.",
+	"terminal_error_line": "Line {line}: {message}",
+	"lua_error_unexpected_symbol": "Unexpected symbol near {symbol}",
+	"lua_error_syntax_near": "Syntax error near {symbol}",
+	"lua_error_expected": "{expected} expected near {symbol}",
+	"lua_error_expected_closing": "{expected} expected (to close {token} at line {line}) near {symbol}",
+	"lua_error_default": "{message}"
 }

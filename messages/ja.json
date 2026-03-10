@@ -3,13 +3,19 @@
 	"hello_world": "こんにちは, {name} from ja!",
 	"app_name": "CodePix",
 	"code_editor_title": "コードエディタ",
-	"problem_tag": "問題1: 一番上の行を赤く塗ろう",
 	"preview_title": "プレビュー",
-	"problem_description": "一番上の行（y=0）のすべてのピクセルを赤色にしよう。",
 	"match_rate_label": "一致率:",
 	"code_length_label": "コード長:",
 	"status_idle": "Idle",
 	"button_run": "実行",
 	"button_reset": "リセット",
-	"current_mode_label": "現在のモード:"
+	"current_mode_label": "現在のモード:",
+	"terminal_title": "ターミナル",
+	"terminal_no_errors": "エラーはありません。実行できます。",
+	"terminal_error_line": "{line}行目: {message}",
+	"lua_error_unexpected_symbol": "{symbol} の近くに間違った文字や記号があります",
+	"lua_error_syntax_near": "{symbol} の近くで構文エラー（文法の間違い）があります",
+	"lua_error_expected": "{symbol} の近くに {expected} が必要です",
+	"lua_error_expected_closing": "{line}行目の {token} を閉じるための {expected} が {symbol} の近くに必要です",
+	"lua_error_default": "{message}"
 }

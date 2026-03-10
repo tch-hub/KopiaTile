@@ -6,8 +6,9 @@
 	let {
 		code = $bindable(
 			'-- Write your CodePix Lua script here\n\nif y == 1 then\n  return 2\nend\nreturn 1\n'
-		)
-	} = $props();
+		),
+		error = null
+	} = $props<{ code?: string; error?: { line: number; message: string } | null }>();
 
 	let editorContainer: HTMLDivElement | null = $state(null);
 	let editor: Monaco.editor.IStandaloneCodeEditor | null = null;
@@ -42,6 +43,28 @@
 		}
 	});
 
+	$effect(() => {
+		if (editor && monaco) {
+			const model = editor.getModel();
+			if (model) {
+				if (error) {
+					monaco.editor.setModelMarkers(model, 'lua', [
+						{
+							severity: monaco.MarkerSeverity.Error,
+							message: error.message,
+							startLineNumber: error.line,
+							startColumn: 1,
+							endLineNumber: error.line,
+							endColumn: model.getLineMaxColumn(error.line)
+						}
+					]);
+				} else {
+					monaco.editor.setModelMarkers(model, 'lua', []);
+				}
+			}
+		}
+	});
+
 	onDestroy(() => {
 		if (editor) {
 			editor.dispose();
@@ -54,11 +77,6 @@
 		<h2 class="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
 			{m.code_editor_title()}
 		</h2>
-		<span
-			class="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary"
-		>
-			{m.problem_tag()}
-		</span>
 	</div>
 
 	<div
@@ -78,13 +96,17 @@
 	>
 		<div class="mb-2 flex items-center justify-between">
 			<span class="font-sans text-xs font-semibold tracking-widest text-muted-foreground uppercase">
-				Terminal
+				{m.terminal_title()}
 			</span>
 		</div>
 		<div class="flex items-start opacity-70">
 			<span class="mr-3 font-bold text-muted-foreground">&gt;</span>
 			<span class="font-sans text-muted-foreground italic">
-				No errors to display. Ready to compile.
+				{#if error}
+					{m.terminal_error_line({ line: error.line, message: error.message })}
+				{:else}
+					{m.terminal_no_errors()}
+				{/if}
 			</span>
 		</div>
 	</div>

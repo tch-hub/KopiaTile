@@ -21,9 +21,6 @@
 			{m.preview_title()}
 		</h2>
 		<div class="flex items-center justify-between">
-			<p class="text-[0.9rem] font-medium text-foreground">
-				{m.problem_description()}
-			</p>
 			<Button onclick={onRun} disabled={isRunning} size="sm">
 				<Play class="mr-2 h-4 w-4" /> Run
 			</Button>
