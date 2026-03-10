@@ -2,32 +2,47 @@
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { Separator } from '$lib/components/ui/separator/index.js';
 	import { Globe } from '@lucide/svelte';
-	import { base } from '$app/paths';
-	import { setLocale, getLocale, localizeHref } from '$lib/paraglide/runtime.js';
+	import { locales, getLocale, localizeHref } from '$lib/paraglide/runtime.js';
 
 	function toggleLanguage() {
-		const current = getLocale();
-		const nextLocale = current === 'ja' ? 'en' : 'ja';
+		const nextLocale = getLocale() === 'ja' ? 'en' : 'ja';
+		// 注意: APP_BASE_PATH はビルド時に Vite によって注入される絶対パスです。
+		const b = APP_BASE_PATH;
 
-		// setLocale(..., { reload: false }) で内部状態とクッキーを更新し、
-		// ベースパスを考慮したパスへ手動で遷移する
-		setLocale(nextLocale, { reload: false });
+		// 1. window.location.pathname からベースパスを剥がす
+		let cleanPath = window.location.pathname;
+		if (b && cleanPath.startsWith(b)) {
+			cleanPath = cleanPath.slice(b.length) || '/';
+		}
 
-		const pathWithoutBase = window.location.pathname.startsWith(base)
-			? window.location.pathname.slice(base.length) || '/'
-			: window.location.pathname;
+		// 2. 現在の言語プレフィックスを除去（多重付与を防ぐ）
+		const segments = cleanPath.split('/').filter(Boolean);
+		if (segments.length > 0 && (locales as string[]).includes(segments[0])) {
+			segments.shift();
+		}
+		const rawPath = '/' + segments.join('/');
 
-		const localizedPath = localizeHref(pathWithoutBase, { locale: nextLocale });
-		const b = base.endsWith('/') ? base.slice(0, -1) : base;
-		const p = localizedPath.startsWith('/') ? localizedPath : '/' + localizedPath;
-		window.location.href = b + p;
+		// 3. 新しい言語のパスを生成
+		let localizedPath = localizeHref(rawPath as `/${string}`, { locale: nextLocale });
+
+		// 4. ベースパスの付与 (二重付与を防ぐ)
+		if (b) {
+			const hasBase = localizedPath.startsWith(b + '/') || localizedPath === b;
+			if (!hasBase) {
+				if (!localizedPath.startsWith('/')) {
+					localizedPath = '/' + localizedPath;
+				}
+				localizedPath = b + localizedPath;
+			}
+		}
+
+		window.location.href = localizedPath || '/';
 	}
 </script>
 
 <div class="mx-auto mt-auto w-full max-w-5xl px-4 pb-8">
 	<Separator class="my-8" />
 
-	<!-- Bottom Operations -->
 	<div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
 		<div class="flex items-center gap-4">
 			<Button

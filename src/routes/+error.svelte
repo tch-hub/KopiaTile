@@ -10,6 +10,20 @@
 	const is404 = $derived(status === 404);
 	const title = $derived(is404 ? m.error_page_title_404() : m.error_page_title_generic());
 	const message = $derived(is404 ? m.error_page_message_404() : m.error_page_message_generic());
+
+	function getHomeHref() {
+		const b = APP_BASE_PATH;
+		let p = localizeHref('/');
+
+		// 1. 生成されたパスが既にベースパスを含んでいるか確認
+		const hasBase = b && (p.startsWith(b + '/') || p === b);
+		if (!hasBase && b) {
+			if (!p.startsWith('/')) p = '/' + p;
+			p = b + p;
+		}
+
+		return p || '/';
+	}
 </script>
 
 <svelte:head>
@@ -18,7 +32,6 @@
 
 <main class="flex flex-1 flex-col items-center justify-center p-4 text-center">
 	<div class="relative mb-8">
-		<!-- Pixel Art Style Decoration -->
 		<div
 			class="absolute -inset-4 rotate-3 transform rounded-xl bg-destructive/10 blur-xl dark:bg-destructive/20"
 		></div>
@@ -47,7 +60,7 @@
 
 	<div class="flex flex-col gap-4 sm:flex-row">
 		<a
-			href={base + localizeHref('/')}
+			href={getHomeHref()}
 			class="inline-flex h-11 items-center justify-center rounded-md bg-primary px-8 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
 		>
 			{m.error_page_back_home()}
@@ -56,7 +69,6 @@
 </main>
 
 <style>
-	/* ピクセルアート風のテクスチャを背景に追加（オプション） */
 	main {
 		background-image: radial-gradient(circle at 2px 2px, var(--border) 1px, transparent 0);
 		background-size: 24px 24px;

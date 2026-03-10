@@ -4,26 +4,17 @@ import { getTextDirection } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 
 const handleParaglide: Handle = ({ event, resolve }) => {
-	const url = new URL(event.request.url);
-
-	// ベースパスを除去した状態で Paraglide に渡す
+	// Paraglideに言語を判定させるため、ベースパスを除去したURLを渡す
 	const urlForParaglide = new URL(event.request.url);
 	if (base && urlForParaglide.pathname.startsWith(base)) {
 		urlForParaglide.pathname = urlForParaglide.pathname.slice(base.length) || '/';
 	}
 	const modifiedRequest = new Request(urlForParaglide, event.request);
 
-	return paraglideMiddleware(modifiedRequest, async ({ request, locale }) => {
-		// Paraglide がデlocalizeし、かつベースパスのない URL を
-		// ベースパスありの状態に戻して SvelteKit に渡す
-		const finalUrl = new URL(request.url);
-		if (base) {
-			const b = base.endsWith('/') ? base.slice(0, -1) : base;
-			const p = finalUrl.pathname.startsWith('/') ? finalUrl.pathname : '/' + finalUrl.pathname;
-			finalUrl.pathname = b + p;
-		}
-
-		event.request = new Request(finalUrl, request);
+	return paraglideMiddleware(modifiedRequest, async ({ locale }) => {
+		// 【重要】ここで event.request を上書きしてはいけません！
+		// SvelteKit のルーティング自体は hooks.ts の reroute フックで処理されるため、
+		// 元の event をそのまま resolve に渡すのが正解です。
 
 		const response = await resolve(event, {
 			transformPageChunk: ({ html }) =>

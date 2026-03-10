@@ -9,15 +9,33 @@
 
 	let { children } = $props();
 
-	function getLocalizedPath(locale: string) {
-		const url = new URL(page.url.href);
-		if (base && url.pathname.startsWith(base)) {
-			url.pathname = url.pathname.slice(base.length) || '/';
+	function getLocalizedPath(locale: (typeof locales)[number]) {
+		const rawPath = page.url.pathname;
+		// 注意: APP_BASE_PATH はビルド時に Vite によって注入される絶対パスです。
+		// SvelteKit の base パスはビルド時に相対パスになるため使用しないでください。
+		const b = APP_BASE_PATH;
+
+		// 1. パスからベースパスを剥がす
+		let cleanPath = rawPath;
+		if (b && cleanPath.startsWith(b)) {
+			cleanPath = cleanPath.slice(b.length) || '/';
 		}
-		const localizedPath = localizeHref(url.pathname, { locale });
-		const b = base.endsWith('/') ? base.slice(0, -1) : base;
-		const p = localizedPath.startsWith('/') ? localizedPath : '/' + localizedPath;
-		return b + p;
+
+		// 2. Paraglide に渡して新しい言語のパスを生成
+		let localizedPath = localizeHref(cleanPath as `/${string}`, { locale });
+
+		// 3. 生成されたパスにベースパスを付与 (二重付与を防ぐ)
+		if (b) {
+			const hasBase = localizedPath.startsWith(b + '/') || localizedPath === b;
+			if (!hasBase) {
+				if (!localizedPath.startsWith('/')) {
+					localizedPath = '/' + localizedPath;
+				}
+				localizedPath = b + localizedPath;
+			}
+		}
+
+		return localizedPath || '/';
 	}
 </script>
 

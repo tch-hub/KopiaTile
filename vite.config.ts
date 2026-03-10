@@ -10,6 +10,9 @@ export default defineConfig({
 		sveltekit(),
 		paraglideVitePlugin({ project: './project.inlang', outdir: './src/lib/paraglide' })
 	],
+	define: {
+		APP_BASE_PATH: JSON.stringify(process.env.NODE_ENV === 'production' ? '/KopiaTile' : '')
+	},
 	resolve: {
 		alias: {
 			$lib: path.resolve('./src/lib')
