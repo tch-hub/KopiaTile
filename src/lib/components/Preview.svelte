@@ -55,9 +55,7 @@
 				<div class="flex flex-1 items-center justify-end">-2</div>
 			</div>
 
-			<div
-				class="relative flex h-[320px] w-[320px] items-center justify-center overflow-hidden rounded-md border-2 border-primary/20 bg-white shadow-xl ring-1 ring-border/50 dark:bg-black"
-			>
+			<div class="relative flex h-[320px] w-[320px] items-center justify-center">
 				{#if grid.length > 0}
 					<div
 						class="pointer-events-none z-20 grid h-full w-full"
@@ -66,8 +64,13 @@
 						{#each grid as row, y}
 							{#each row as colorIndex, x}
 								<div
-									style="background-color: var(--codepix-{colorIndex});"
-									class="flex h-full w-full items-center justify-center border border-black/5 font-mono text-xs text-muted-foreground opacity-60 mix-blend-difference select-none"
+									style="background-color: {colorIndex === 0
+										? 'transparent'
+										: `var(--codepix-${colorIndex})`};"
+									class="flex h-full w-full items-center justify-center transition-all duration-300 select-none {colorIndex ===
+									0
+										? ''
+										: 'z-10 scale-[0.92] rounded-md border border-black/10 shadow-[inset_0_2px_4px_rgba(255,255,255,0.5),inset_0_-3px_4px_rgba(0,0,0,0.3),0_2px_5px_rgba(0,0,0,0.4)]'}"
 								></div>
 							{/each}
 						{/each}

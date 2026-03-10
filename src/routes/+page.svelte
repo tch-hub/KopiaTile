@@ -11,10 +11,20 @@
 	let isRunning = $state(false);
 
 	let engine: CodePixEngine | null = null;
+	let debounceTimer: ReturnType<typeof setTimeout>;
 
 	onMount(() => {
 		engine = new CodePixEngine(16, 16);
+		parseAndRun();
 		return () => engine?.dispose();
+	});
+
+	$effect(() => {
+		const currentCode = code;
+		clearTimeout(debounceTimer);
+		debounceTimer = setTimeout(() => {
+			parseAndRun();
+		}, 500);
 	});
 
 	async function parseAndRun() {
