@@ -14,6 +14,7 @@
 	let editor: Monaco.editor.IStandaloneCodeEditor | null = null;
 	let monaco: typeof Monaco | null = null;
 	let decorations: string[] = [];
+	let completionProvider: Monaco.IDisposable | null = null;
 
 	function updateColorHighlights() {
 		if (!editor || !monaco) return;
@@ -23,7 +24,7 @@
 
 		const newDecorations: Monaco.editor.IModelDeltaDecoration[] = [];
 		const text = model.getValue();
-		const colorRegex = /\b(TRANSPARENT|WHITE|BLACK|RED|BLUE)\b/g;
+		const colorRegex = /\b(TRANSPARENT|WHITE|BLACK|RED|YELLOW|GREEN|BLUE|PURPLE|PINK)\b/g;
 		let match;
 
 		while ((match = colorRegex.exec(text)) !== null) {
@@ -58,10 +59,71 @@
 		};
 
 		if (editorContainer && monaco) {
+			completionProvider = monaco.languages.registerCompletionItemProvider('lua', {
+				provideCompletionItems: (model, position) => {
+					const word = model.getWordUntilPosition(position);
+					const range = {
+						startLineNumber: position.lineNumber,
+						endLineNumber: position.lineNumber,
+						startColumn: word.startColumn,
+						endColumn: word.endColumn
+					};
+					const colors = [
+						'WHITE',
+						'BLACK',
+						'RED',
+						'YELLOW',
+						'GREEN',
+						'BLUE',
+						'PURPLE',
+						'PINK',
+						'TRANSPARENT'
+					];
+					const keywords = [
+						'if',
+						'then',
+						'else',
+						'elseif',
+						'end',
+						'return',
+						'for',
+						'do',
+						'while',
+						'repeat',
+						'until',
+						'function',
+						'local',
+						'nil',
+						'true',
+						'false',
+						'and',
+						'or',
+						'not'
+					];
+
+					return {
+						suggestions: [
+							...colors.map((color) => ({
+								label: color,
+								kind: monaco!.languages.CompletionItemKind.Constant,
+								insertText: color,
+								range: range
+							})),
+							...keywords.map((keyword) => ({
+								label: keyword,
+								kind: monaco!.languages.CompletionItemKind.Keyword,
+								insertText: keyword,
+								range: range
+							}))
+						]
+					};
+				}
+			});
+
 			editor = monaco.editor.create(editorContainer, {
 				value: code,
 				language: 'lua',
-				theme: 'vs-dark',
+				theme: 'vs',
 				automaticLayout: true,
 				minimap: { enabled: false },
 				fontSize: 14,
@@ -71,7 +133,42 @@
 			});
 
 			editor.onDidChangeModelContent(() => {
-				code = editor?.getValue() || '';
+				const currentCode = editor?.getValue() || '';
+				code = currentCode;
+
+				if (editor && monaco) {
+					const model = editor.getModel();
+					if (model) {
+						const colorRegex = /\b(transparent|white|black|red|yellow|green|blue|purple|pink)\b/gi;
+						const edits: Monaco.editor.IIdentifiedSingleEditOperation[] = [];
+						let match;
+
+						while ((match = colorRegex.exec(currentCode)) !== null) {
+							const matchedText = match[0];
+							const upperText = matchedText.toUpperCase();
+							// 大文字になっていない場合のみ置換
+							if (matchedText !== upperText) {
+								const startPos = model.getPositionAt(match.index);
+								const endPos = model.getPositionAt(match.index + matchedText.length);
+								edits.push({
+									range: new monaco.Range(
+										startPos.lineNumber,
+										startPos.column,
+										endPos.lineNumber,
+										endPos.column
+									),
+									text: upperText
+								});
+							}
+						}
+
+						if (edits.length > 0) {
+							// executeEditsはカーソル位置やUndo履歴を保持して置換する
+							editor.executeEdits('auto-uppercase', edits);
+						}
+					}
+				}
+
 				updateColorHighlights();
 			});
 
@@ -106,6 +203,9 @@
 		if (editor) {
 			editor.dispose();
 		}
+		if (completionProvider) {
+			completionProvider.dispose();
+		}
 	});
 </script>
 
@@ -124,44 +224,72 @@
 			<span class="font-mono text-xs text-muted-foreground/80">script.lua</span>
 		</div>
 		<!-- Monaco DOM Container -->
-		<div bind:this={editorContainer} class="w-full flex-1 bg-[#1e1e1e]"></div>
+		<div bind:this={editorContainer} class="w-full flex-1"></div>
 	</div>
 </div>
 
 <style>
 	:global(.kopiatile-highlight-transparent) {
-		color: #ffffff !important;
-		background-color: rgba(128, 128, 128, 0.5);
-		border: 1px dashed rgba(255, 255, 255, 0.3);
+		color: #333333 !important;
+		background-color: var(--kopiatile-0) !important;
+		border: 1px dashed rgba(0, 0, 0, 0.2);
 		border-radius: 2px;
 		padding: 0 2px;
 		font-style: italic;
 	}
 	:global(.kopiatile-highlight-white) {
 		color: #000000 !important;
-		background-color: #ffffff !important;
+		background-color: var(--kopiatile-1) !important;
 		border-radius: 2px;
 		padding: 0 2px;
 		font-weight: bold;
 	}
 	:global(.kopiatile-highlight-black) {
 		color: #ffffff !important;
-		background-color: #000000 !important;
-		border: 1px solid rgba(255, 255, 255, 0.2);
+		background-color: var(--kopiatile-2) !important;
+		border: 1px solid rgba(0, 0, 0, 0.1);
 		border-radius: 2px;
 		padding: 0 2px;
 		font-weight: bold;
 	}
 	:global(.kopiatile-highlight-red) {
 		color: #ffffff !important;
-		background-color: #ff5555 !important;
+		background-color: var(--kopiatile-3) !important;
+		border-radius: 2px;
+		padding: 0 2px;
+		font-weight: bold;
+	}
+	:global(.kopiatile-highlight-yellow) {
+		color: #000000 !important;
+		background-color: var(--kopiatile-4) !important;
+		border-radius: 2px;
+		padding: 0 2px;
+		font-weight: bold;
+	}
+	:global(.kopiatile-highlight-green) {
+		color: #ffffff !important;
+		background-color: var(--kopiatile-5) !important;
 		border-radius: 2px;
 		padding: 0 2px;
 		font-weight: bold;
 	}
 	:global(.kopiatile-highlight-blue) {
 		color: #ffffff !important;
-		background-color: #55aaff !important;
+		background-color: var(--kopiatile-6) !important;
+		border-radius: 2px;
+		padding: 0 2px;
+		font-weight: bold;
+	}
+	:global(.kopiatile-highlight-purple) {
+		color: #ffffff !important;
+		background-color: var(--kopiatile-7) !important;
+		border-radius: 2px;
+		padding: 0 2px;
+		font-weight: bold;
+	}
+	:global(.kopiatile-highlight-pink) {
+		color: #ffffff !important;
+		background-color: var(--kopiatile-8) !important;
 		border-radius: 2px;
 		padding: 0 2px;
 		font-weight: bold;

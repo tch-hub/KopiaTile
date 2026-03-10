@@ -23,7 +23,11 @@ local TRANSPARENT = 0
 local WHITE = 1
 local BLACK = 2
 local RED = 3
-local BLUE = 4
+local YELLOW = 4
+local GREEN = 5
+local BLUE = 6
+local PURPLE = 7
+local PINK = 8
 function _evaluate_pixel(x, y, width, height)
 ${code}
 end
