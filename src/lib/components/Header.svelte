@@ -34,7 +34,7 @@
 		>
 			CP
 		</div>
-		CodePix
+		KopiaTile
 	</div>
 	<Button variant="ghost" size="icon" onclick={toggleTheme}>
 		{#if isDarkMode}

@@ -1,7 +1,7 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"hello_world": "こんにちは, {name} from ja!",
-	"app_name": "CodePix",
+	"app_name": "KopiaTile",
 	"code_editor_title": "コードエディタ",
 	"preview_title": "プレビュー",
 	"match_rate_label": "一致率:",
@@ -17,5 +17,10 @@
 	"lua_error_syntax_near": "{symbol} の近くで構文エラー（文法の間違い）があります",
 	"lua_error_expected": "{symbol} の近くに {expected} が必要です",
 	"lua_error_expected_closing": "{line}行目の {token} を閉じるための {expected} が {symbol} の近くに必要です",
-	"lua_error_default": "{message}"
+	"lua_error_default": "{message}",
+	"error_page_title_404": "ページが見つかりません",
+	"error_page_message_404": "お探しのページは存在しないか、移動した可能性があります。",
+	"error_page_title_generic": "エラーが発生しました",
+	"error_page_message_generic": "申し訳ありません。予期しないエラーが発生しました。",
+	"error_page_back_home": "ホームに戻る"
 }

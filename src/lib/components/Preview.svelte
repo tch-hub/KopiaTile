@@ -54,7 +54,7 @@
 								<div
 									style="background-color: {colorIndex === 0
 										? 'transparent'
-										: `var(--codepix-${colorIndex})`};"
+										: `var(--kopiatile-${colorIndex})`};"
 									class="flex h-full w-full items-center justify-center transition-all duration-300 select-none {colorIndex ===
 									0
 										? ''

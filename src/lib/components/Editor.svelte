@@ -5,7 +5,7 @@
 
 	let {
 		code = $bindable(
-			'-- Write your CodePix Lua script here\n\nif y == 1 then\n  return 2\nend\nreturn 1\n'
+			'-- Write your KopiaTile Lua script here\n\nif y == 1 then\n  return 2\nend\nreturn 1\n'
 		),
 		error = null
 	} = $props<{ code?: string; error?: { line: number; message: string } | null }>();
@@ -47,7 +47,7 @@
 					endPos.column
 				),
 				options: {
-					inlineClassName: `codepix-highlight-${color.toLowerCase()}`
+					inlineClassName: `kopiatile-highlight-${color.toLowerCase()}`
 				}
 			});
 		}
@@ -158,7 +158,7 @@
 </div>
 
 <style>
-	:global(.codepix-highlight-transparent) {
+	:global(.kopiatile-highlight-transparent) {
 		color: #ffffff !important;
 		background-color: rgba(128, 128, 128, 0.5);
 		border: 1px dashed rgba(255, 255, 255, 0.3);
@@ -166,14 +166,14 @@
 		padding: 0 2px;
 		font-style: italic;
 	}
-	:global(.codepix-highlight-white) {
+	:global(.kopiatile-highlight-white) {
 		color: #000000 !important;
 		background-color: #ffffff !important;
 		border-radius: 2px;
 		padding: 0 2px;
 		font-weight: bold;
 	}
-	:global(.codepix-highlight-black) {
+	:global(.kopiatile-highlight-black) {
 		color: #ffffff !important;
 		background-color: #000000 !important;
 		border: 1px solid rgba(255, 255, 255, 0.2);
@@ -181,14 +181,14 @@
 		padding: 0 2px;
 		font-weight: bold;
 	}
-	:global(.codepix-highlight-red) {
+	:global(.kopiatile-highlight-red) {
 		color: #ffffff !important;
 		background-color: #ff5555 !important;
 		border-radius: 2px;
 		padding: 0 2px;
 		font-weight: bold;
 	}
-	:global(.codepix-highlight-blue) {
+	:global(.kopiatile-highlight-blue) {
 		color: #ffffff !important;
 		background-color: #55aaff !important;
 		border-radius: 2px;

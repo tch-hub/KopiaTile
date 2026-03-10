@@ -1,7 +1,7 @@
 import { LuaPixelEngine } from './LuaEngine';
 import type { PixelEngine } from './types';
 
-export class CodePixEngine {
+export class KopiaTileEngine {
     private engine: PixelEngine;
     private width: number;
     private height: number;

@@ -1,9 +1,7 @@
 <script lang="ts">
-	import Header from '$lib/components/Header.svelte';
-	import Footer from '$lib/components/Footer.svelte';
 	import Editor from '$lib/components/Editor.svelte';
 	import Preview from '$lib/components/Preview.svelte';
-	import { CodePixEngine } from '$lib/engine/CodePixEngine.js';
+	import { KopiaTileEngine } from '$lib/engine/KopiaTileEngine.js';
 	import { onMount } from 'svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
@@ -15,12 +13,12 @@ return 0`);
 	let grid = $state<number[][]>([]);
 	let isRunning = $state(false);
 
-	let engine: CodePixEngine | null = null;
+	let engine: KopiaTileEngine | null = null;
 	let debounceTimer: ReturnType<typeof setTimeout>;
 	let editorError: { line: number; message: string } | null = $state(null);
 
 	onMount(() => {
-		engine = new CodePixEngine(16, 16);
+		engine = new KopiaTileEngine(16, 16);
 		parseAndRun();
 		return () => engine?.dispose();
 	});
@@ -79,21 +77,13 @@ return 0`);
 	}
 </script>
 
-<div class="flex min-h-screen flex-col bg-background text-foreground">
-	<!-- Header -->
-	<Header />
+<!-- Main -->
+<main class="mx-auto w-full max-w-5xl flex-1 space-y-6 px-4 py-8">
+	<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+		<!-- 左カラム: コードエディタエリア -->
+		<Editor bind:code error={editorError} />
 
-	<!-- Main -->
-	<main class="mx-auto w-full max-w-5xl flex-1 space-y-6 px-4 py-8">
-		<div class="grid grid-cols-1 gap-6 md:grid-cols-2">
-			<!-- 左カラム: コードエディタエリア -->
-			<Editor bind:code error={editorError} />
-
-			<!-- 右カラム: プレビューエリア -->
-			<Preview {grid} {isRunning} />
-		</div>
-	</main>
-
-	<!-- Footer -->
-	<Footer />
-</div>
+		<!-- 右カラム: プレビューエリア -->
+		<Preview {grid} {isRunning} />
+	</div>
+</main>

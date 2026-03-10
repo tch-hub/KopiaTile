@@ -1,7 +1,7 @@
 {
 	"$schema": "https://inlang.com/schema/inlang-message-format",
 	"hello_world": "Hello, {name} from en!",
-	"app_name": "CodePix",
+	"app_name": "KopiaTile",
 	"code_editor_title": "Code Editor",
 	"preview_title": "Preview",
 	"match_rate_label": "Match Rate:",
@@ -17,5 +17,10 @@
 	"lua_error_syntax_near": "Syntax error near {symbol}",
 	"lua_error_expected": "{expected} expected near {symbol}",
 	"lua_error_expected_closing": "{expected} expected (to close {token} at line {line}) near {symbol}",
-	"lua_error_default": "{message}"
+	"lua_error_default": "{message}",
+	"error_page_title_404": "Page Not Found",
+	"error_page_message_404": "The page you are looking for does not exist or has been moved.",
+	"error_page_title_generic": "Something went wrong",
+	"error_page_message_generic": "We apologize, but an unexpected error has occurred.",
+	"error_page_back_home": "Back to Home"
 }
