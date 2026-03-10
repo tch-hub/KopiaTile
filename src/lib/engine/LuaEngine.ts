@@ -1,5 +1,6 @@
 import { LuaFactory, LuaEngine as WasmoonEngine } from 'wasmoon';
 import type { PixelEngine } from './types';
+import { GRID_RADIUS, GRID_SIZE } from '$lib/config';
 
 export class LuaPixelEngine implements PixelEngine {
     private factory: LuaFactory;
@@ -23,10 +24,15 @@ export class LuaPixelEngine implements PixelEngine {
             this.lua = await this.factory.createEngine();
 
             // ユーザーコードをラップして、各ピクセルごとに実行できる関数を定義する
-            // 戻り値がない場合は1(白)をデフォルトとする
+            // 戻り値がない場合は0(透明)をデフォルトとする
             const wrappedCode = `
 local abs = math.abs
 
+local TRANSPARENT = 0
+local WHITE = 1
+local BLACK = 2
+local RED = 3
+local BLUE = 4
 function _evaluate_pixel(x, y, width, height)
 ${code}
 end
@@ -34,14 +40,14 @@ end
 function _evaluate_all(width, height)
     local result = {}
     local index_y = 0
-    -- Y座標は上が2、下が-2となるように (下へ行くほど小さくなる) 5x5 グリッドとする
-    for y = 2, -2, -1 do
+    -- Y座標は上が${GRID_RADIUS}、下が-${GRID_RADIUS}となるように 
+    for y = ${GRID_RADIUS}, -${GRID_RADIUS}, -1 do
         local row = {}
         local index_x = 0
-        for x = -2, 2 do
+        for x = -${GRID_RADIUS}, ${GRID_RADIUS} do
             local color = _evaluate_pixel(x, y, width, height)
             if color == nil then
-                color = 1 -- デフォルトは白
+                color = 0 -- デフォルトは透明(空)
             end
             row[index_x] = color
             index_x = index_x + 1
@@ -85,13 +91,13 @@ end
     private normalizeResult(luaResult: any, width: number, height: number): number[][] {
         const grid: number[][] = [];
         // Lua側で [0] ~ [4] のキーで保存されているため、0から4のループになる
-        for (let y = 0; y < 5; y++) {
+        for (let y = 0; y < GRID_SIZE; y++) {
             const rowArr = luaResult[y] || luaResult[String(y)];
             const row: number[] = [];
-            for (let x = 0; x < 5; x++) {
+            for (let x = 0; x < GRID_SIZE; x++) {
                 let val = rowArr ? (rowArr[x] || rowArr[String(x)]) : undefined;
                 if (typeof val !== 'number') {
-                    val = 1; // フォールバック
+                    val = 0; // フォールバック (透明)
                 }
                 row.push(val);
             }

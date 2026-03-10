@@ -7,7 +7,11 @@
 	import { onMount } from 'svelte';
 	import * as m from '$lib/paraglide/messages.js';
 
-	let code = $state('');
+	let code = $state(`if abs(x) + abs(y) <= 4 then
+  return RED
+end
+
+return 0`);
 	let grid = $state<number[][]>([]);
 	let isRunning = $state(false);
 
@@ -86,7 +90,7 @@
 			<Editor bind:code error={editorError} />
 
 			<!-- 右カラム: プレビューエリア -->
-			<Preview {grid} {isRunning} onRun={parseAndRun} />
+			<Preview {grid} {isRunning} />
 		</div>
 	</main>
 

@@ -13,6 +13,47 @@
 	let editorContainer: HTMLDivElement | null = $state(null);
 	let editor: Monaco.editor.IStandaloneCodeEditor | null = null;
 	let monaco: typeof Monaco | null = null;
+	let decorations: string[] = [];
+
+	const COLOR_MAP = {
+		TRANSPARENT: 'text-gray-500 italic',
+		WHITE: 'text-white font-bold',
+		BLACK: 'text-black bg-white/80 rounded px-0.5 font-bold',
+		RED: 'text-[#ff5555] font-bold',
+		BLUE: 'text-[#55aaff] font-bold'
+	} as const;
+
+	function updateColorHighlights() {
+		if (!editor || !monaco) return;
+
+		const model = editor.getModel();
+		if (!model) return;
+
+		const newDecorations: Monaco.editor.IModelDeltaDecoration[] = [];
+		const text = model.getValue();
+		const colorRegex = /\b(TRANSPARENT|WHITE|BLACK|RED|BLUE)\b/g;
+		let match;
+
+		while ((match = colorRegex.exec(text)) !== null) {
+			const startPos = model.getPositionAt(match.index);
+			const endPos = model.getPositionAt(match.index + match[0].length);
+			const color = match[1] as keyof typeof COLOR_MAP;
+
+			newDecorations.push({
+				range: new monaco.Range(
+					startPos.lineNumber,
+					startPos.column,
+					endPos.lineNumber,
+					endPos.column
+				),
+				options: {
+					inlineClassName: `codepix-highlight-${color.toLowerCase()}`
+				}
+			});
+		}
+
+		decorations = editor.deltaDecorations(decorations, newDecorations);
+	}
 
 	onMount(async () => {
 		monaco = await import('monaco-editor');
@@ -39,7 +80,11 @@
 
 			editor.onDidChangeModelContent(() => {
 				code = editor?.getValue() || '';
+				updateColorHighlights();
 			});
+
+			// Initial highlight
+			updateColorHighlights();
 		}
 	});
 
@@ -111,3 +156,43 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	:global(.codepix-highlight-transparent) {
+		color: #ffffff !important;
+		background-color: rgba(128, 128, 128, 0.5);
+		border: 1px dashed rgba(255, 255, 255, 0.3);
+		border-radius: 2px;
+		padding: 0 2px;
+		font-style: italic;
+	}
+	:global(.codepix-highlight-white) {
+		color: #000000 !important;
+		background-color: #ffffff !important;
+		border-radius: 2px;
+		padding: 0 2px;
+		font-weight: bold;
+	}
+	:global(.codepix-highlight-black) {
+		color: #ffffff !important;
+		background-color: #000000 !important;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+		border-radius: 2px;
+		padding: 0 2px;
+		font-weight: bold;
+	}
+	:global(.codepix-highlight-red) {
+		color: #ffffff !important;
+		background-color: #ff5555 !important;
+		border-radius: 2px;
+		padding: 0 2px;
+		font-weight: bold;
+	}
+	:global(.codepix-highlight-blue) {
+		color: #ffffff !important;
+		background-color: #55aaff !important;
+		border-radius: 2px;
+		padding: 0 2px;
+		font-weight: bold;
+	}
+</style>
