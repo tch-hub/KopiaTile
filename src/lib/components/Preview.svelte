@@ -7,18 +7,19 @@
 	const axisLabels = Array.from({ length: GRID_SIZE }, (_, i) => i - GRID_RADIUS);
 	const yAxisLabels = [...axisLabels].reverse();
 
-	let { grid = [], error = null } = $props<{
+	let { grid = [], error = null, title = m.preview_title() } = $props<{
 		grid?: number[][];
 		isRunning?: boolean;
 		code?: string;
 		error?: { line: number; message: string } | null;
+		title?: string;
 	}>();
 </script>
 
 <div class="flex h-full flex-col space-y-3">
 	<div>
 		<h2 class="mb-1 text-sm font-semibold tracking-wider text-muted-foreground uppercase">
-			{m.preview_title()}
+			{title}
 		</h2>
 		<div class="flex items-center justify-between"></div>
 	</div>

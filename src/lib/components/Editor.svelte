@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, untrack } from 'svelte';
 	import * as m from '$lib/paraglide/messages.js';
 	import type * as Monaco from 'monaco-editor';
 
@@ -11,10 +11,11 @@
 	} = $props<{ code?: string; error?: { line: number; message: string } | null }>();
 
 	let editorContainer: HTMLDivElement | null = $state(null);
-	let editor: Monaco.editor.IStandaloneCodeEditor | null = null;
+	let editor: Monaco.editor.IStandaloneCodeEditor | null = $state(null);
 	let monaco: typeof Monaco | null = null;
 	let decorations: string[] = [];
 	let completionProvider: Monaco.IDisposable | null = null;
+	let isSettingValue = false; // 外部からsetValueするときの循環防止フラグ
 
 	function updateColorHighlights() {
 		if (!editor || !monaco) return;
@@ -133,7 +134,8 @@
 			});
 
 			editor.onDidChangeModelContent(() => {
-				const currentCode = editor?.getValue() || '';
+				if (isSettingValue) return; // 外部setValueによるイベントは無視
+				const currentCode = editor?.getValue() || ''
 				code = currentCode;
 
 				if (editor && monaco) {
@@ -197,6 +199,19 @@
 				}
 			}
 		}
+	});
+
+	$effect(() => {
+		// code を追跡（リアクティブ依存として登録）
+		const newCode = code;
+		// editor.getValue() は untrack 内で呼び出してリアクティブ追跡を避ける
+		untrack(() => {
+			if (editor && newCode !== undefined && newCode !== editor.getValue()) {
+				isSettingValue = true;
+				editor.setValue(newCode || '');
+				isSettingValue = false;
+			}
+		});
 	});
 
 	onDestroy(() => {
