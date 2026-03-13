@@ -10,8 +10,14 @@
 			'-- Write your KopiaTile Lua script here\n\nif y == 1 then\n  return 2\nend\nreturn 1\n'
 		),
 		error = null,
-		title = m.code_editor_title()
-	} = $props<{ code?: string; error?: { line: number; message: string } | null; title?: string }>();
+		title = m.code_editor_title(),
+		onManualChange = () => {}
+	} = $props<{
+		code?: string;
+		error?: { line: number; message: string } | null;
+		title?: string;
+		onManualChange?: () => void;
+	}>();
 
 	let editorContainer: HTMLDivElement | null = $state(null);
 	let editor: Monaco.editor.IStandaloneCodeEditor | null = $state(null);
@@ -19,6 +25,19 @@
 	let decorations: string[] = [];
 	let completionProvider: Monaco.IDisposable | null = null;
 	let isSettingValue = false; // 外部からsetValueするときの循環防止フラグ
+
+	const COLORS = [
+		'TRANSPARENT',
+		'WHITE',
+		'BLACK',
+		'RED',
+		'YELLOW',
+		'GREEN',
+		'BLUE',
+		'PURPLE',
+		'PINK'
+	];
+	const COLOR_REGEX = new RegExp(`\\b(${COLORS.join('|')})\\b`, 'gi');
 
 	function updateColorHighlights() {
 		if (!editor || !monaco) return;
@@ -28,10 +47,12 @@
 
 		const newDecorations: Monaco.editor.IModelDeltaDecoration[] = [];
 		const text = model.getValue();
-		const colorRegex = /\b(TRANSPARENT|WHITE|BLACK|RED|YELLOW|GREEN|BLUE|PURPLE|PINK)\b/g;
 		let match;
 
-		while ((match = colorRegex.exec(text)) !== null) {
+		// 重複を避けるため正規表現の index をリセット
+		COLOR_REGEX.lastIndex = 0;
+
+		while ((match = COLOR_REGEX.exec(text)) !== null) {
 			const startPos = model.getPositionAt(match.index);
 			const endPos = model.getPositionAt(match.index + match[0].length);
 			const color = match[1].toLowerCase();
@@ -72,17 +93,6 @@
 						startColumn: word.startColumn,
 						endColumn: word.endColumn
 					};
-					const colors = [
-						'WHITE',
-						'BLACK',
-						'RED',
-						'YELLOW',
-						'GREEN',
-						'BLUE',
-						'PURPLE',
-						'PINK',
-						'TRANSPARENT'
-					];
 					const keywords = [
 						'if',
 						'then',
@@ -107,7 +117,7 @@
 
 					return {
 						suggestions: [
-							...colors.map((color) => ({
+							...COLORS.map((color) => ({
 								label: color,
 								kind: monaco!.languages.CompletionItemKind.Constant,
 								insertText: color,
@@ -144,11 +154,11 @@
 				if (editor && monaco) {
 					const model = editor.getModel();
 					if (model) {
-						const colorRegex = /\b(transparent|white|black|red|yellow|green|blue|purple|pink)\b/gi;
 						const edits: Monaco.editor.IIdentifiedSingleEditOperation[] = [];
 						let match;
 
-						while ((match = colorRegex.exec(currentCode)) !== null) {
+						COLOR_REGEX.lastIndex = 0;
+						while ((match = COLOR_REGEX.exec(currentCode)) !== null) {
 							const matchedText = match[0];
 							const upperText = matchedText.toUpperCase();
 							// 大文字になっていない場合のみ置換
@@ -175,6 +185,7 @@
 				}
 
 				updateColorHighlights();
+				onManualChange();
 			});
 
 			// Initial highlight
@@ -213,6 +224,7 @@
 				isSettingValue = true;
 				editor.setValue(newCode || '');
 				isSettingValue = false;
+				updateColorHighlights();
 			}
 		});
 	});

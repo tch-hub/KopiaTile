@@ -2,17 +2,21 @@
 	import { type Problem } from '$lib/problems';
 	import { Trophy, X } from '@lucide/svelte';
 	import * as m from '$lib/paraglide/messages.js';
+	import { getLocaleText } from '$lib/utils';
+	import { getLocale } from '$lib/paraglide/runtime.js';
 
 	let {
 		selectedProblem = $bindable(),
 		isSolved,
 		code = $bindable(),
-		targetGrid = $bindable()
+		targetGrid = $bindable(),
+		isShowingAnswer = $bindable()
 	}: {
 		selectedProblem: Problem | null;
 		isSolved: boolean;
 		code: string;
 		targetGrid: number[][];
+		isShowingAnswer: boolean;
 	} = $props();
 </script>
 
@@ -23,9 +27,11 @@
 		<div class="flex flex-col gap-0.5">
 			<div class="flex items-center gap-2">
 				<h2 class="text-xl font-bold tracking-tight text-primary">
-					{(m as unknown as Record<string, () => string>)[selectedProblem.title]
-						? (m as unknown as Record<string, () => string>)[selectedProblem.title]()
-						: selectedProblem.title}
+					{selectedProblem
+						? getLocaleText(selectedProblem.title, getLocale(), () =>
+								(m as unknown as Record<string, () => string>)[selectedProblem!.title as string]?.()
+						  )
+						: ''}
 				</h2>
 				{#if isSolved}
 					<div
@@ -37,9 +43,13 @@
 				{/if}
 			</div>
 			<p class="text-sm leading-relaxed text-muted-foreground">
-				{(m as unknown as Record<string, () => string>)[selectedProblem.description]
-					? (m as unknown as Record<string, () => string>)[selectedProblem.description]()
-					: selectedProblem.description}
+				{selectedProblem
+					? getLocaleText(selectedProblem.description, getLocale(), () =>
+							(m as unknown as Record<string, () => string>)[
+								selectedProblem!.description as string
+							]?.()
+					  )
+					: ''}
 			</p>
 		</div>
 		<div class="ml-4 flex shrink-0 items-center gap-2">
@@ -48,6 +58,7 @@
 				onclick={() => {
 					if (selectedProblem) {
 						code = selectedProblem.targetCode;
+						isShowingAnswer = true;
 					}
 				}}
 			>

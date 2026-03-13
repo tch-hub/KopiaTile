@@ -25,6 +25,7 @@ return 0`);
 	let selectedProblem: Problem | null = $state(null);
 	let targetGrid: number[][] = $state([]);
 	let isSolved = $state(false);
+	let isShowingAnswer = $state(false);
 
 	function checkGridsMatch(g1: number[][], g2: number[][]) {
 		if (!g1 || !g2 || g1.length !== g2.length) return false;
@@ -42,6 +43,7 @@ return 0`);
 		uiState.isProblemSidebarOpen = false;
 		code = problem.initialCode;
 		isSolved = false;
+		isShowingAnswer = false;
 
 		if (engine) {
 			try {
@@ -134,11 +136,11 @@ return 0`);
 
 <!-- Main -->
 <main class="relative mx-auto w-full max-w-[1400px] flex-1 space-y-4 px-4 py-4">
-	<ProblemDescription bind:selectedProblem {isSolved} bind:code bind:targetGrid />
+	<ProblemDescription bind:selectedProblem {isSolved} bind:code bind:targetGrid bind:isShowingAnswer />
 
 	<div class="grid grid-cols-1 gap-6 {selectedProblem ? 'md:grid-cols-3' : 'md:grid-cols-2'}">
 		<!-- 左カラム: エディタエリア -->
-		<Editor bind:code error={editorError} />
+		<Editor bind:code error={editorError} onManualChange={() => (isShowingAnswer = false)} />
 
 		<!-- 中央カラム: プレビューエリア -->
 		<div class="group relative">
@@ -152,7 +154,7 @@ return 0`);
 					>
 						<Trophy class="h-4 w-4 text-primary-foreground" />
 						<span class="text-sm font-bold tracking-tight text-primary-foreground"
-							>{m.problem_solved()}</span
+							>{isShowingAnswer ? m.showing_model_answer() : m.problem_solved()}</span
 						>
 					</div>
 				</div>

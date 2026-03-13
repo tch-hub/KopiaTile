@@ -3,6 +3,8 @@
 	import { X } from '@lucide/svelte';
 	import { problems, type Problem } from '$lib/problems';
 	import * as m from '$lib/paraglide/messages.js';
+	import { getLocaleText } from '$lib/utils';
+	import { getLocale } from '$lib/paraglide/runtime.js';
 
 	let {
 		isOpen = false,
@@ -40,14 +42,14 @@
 					onclick={() => onSelect(problem)}
 				>
 					<h3 class="font-medium">
-						{(m as unknown as Record<string, () => string>)[problem.title]
-							? (m as unknown as Record<string, () => string>)[problem.title]()
-							: problem.title}
+						{getLocaleText(problem.title, getLocale(), () =>
+							(m as unknown as Record<string, () => string>)[problem.title as string]?.()
+						)}
 					</h3>
 					<p class="mt-1 text-sm text-muted-foreground">
-						{(m as unknown as Record<string, () => string>)[problem.description]
-							? (m as unknown as Record<string, () => string>)[problem.description]()
-							: problem.description}
+						{getLocaleText(problem.description, getLocale(), () =>
+							(m as unknown as Record<string, () => string>)[problem.description as string]?.()
+						)}
 					</p>
 				</button>
 			{/each}

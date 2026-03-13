@@ -1,90 +1,84 @@
+export type ProblemText = string | { [lang: string]: string };
+
 export type Problem = {
 	id: string;
-	title: string;
-	description: string;
+	difficulty: number;
+	title: ProblemText;
+	description: ProblemText;
 	initialCode: string;
 	targetCode: string;
 };
 
-export const problems: Problem[] = [
-	{
-		id: '1',
-		title: 'problem_1_title',
-		description: 'problem_1_desc',
-		initialCode: '-- 白(WHITE)を返してみよう\nreturn 0',
-		targetCode: 'return WHITE'
-	},
-	{
-		id: '2',
-		title: 'problem_2_title',
-		description: 'problem_2_desc',
-		initialCode:
-			'if x > 0 then\n    -- ここに正しいコードを書いてみよう\nelse\n    -- ここに正しいコードを書いてみよう\nend',
-		targetCode: 'if x > 0 then\n    return BLACK\nelse\n    return WHITE\nend'
-	},
-	{
-		id: '3',
-		title: 'problem_3_title',
-		description: 'problem_3_desc',
-		initialCode:
-			'-- y が 0 より小さいときの条件を書いてみよう\nif ... then\n    return RED\nelse\n    return WHITE\nend',
-		targetCode: 'if y < 0 then\n    return RED\nelse\n    return WHITE\nend'
-	},
-	{
-		id: '4',
-		title: 'problem_4_title',
-		description: 'problem_4_desc',
-		initialCode:
-			'-- x が正、かつ y が負の条件を書いてみよう\nif ... then\n    return BLUE\nelse\n    return WHITE\nend',
-		targetCode: 'if x > 0 and y < 0 then\n    return BLUE\nelse\n    return WHITE\nend'
-	},
-	{
-		id: '5',
-		title: 'problem_5_title',
-		description: 'problem_5_desc',
-		initialCode:
-			'-- x と y がどちらも 0 のときだけ BLACK を返すようにしよう\nif ... then\n    return BLACK\nend\n\nreturn WHITE',
-		targetCode: 'if x == 0 and y == 0 then\n    return BLACK\nelse\n    return WHITE\nend'
-	},
-	{
-		id: '6',
-		title: 'problem_6_title',
-		description: 'problem_6_desc',
-		initialCode:
-			'-- x が 0 または y が 0 の条件を書いてみよう\nif ... then\n    return BLACK\nelse\n    return WHITE\nend',
-		targetCode: 'if x == 0 or y == 0 then\n    return BLACK\nelse\n    return WHITE\nend'
-	},
-	{
-		id: '7',
-		title: 'problem_7_title',
-		description: 'problem_7_desc',
-		initialCode:
-			'-- 一番外側（x か y が -4 か 4）の条件を組み合わせてみよう\nif ... then\n    return BLACK\nelse\n    return WHITE\nend',
-		targetCode:
-			'if x == -4 or x == 4 or y == -4 or y == 4 then\n    return BLACK\nelse\n    return WHITE\nend'
-	},
-	{
-		id: '8',
-		title: 'problem_8_title',
-		description: 'problem_8_desc',
-		initialCode:
-			'-- (x + y) を 2 で割った余りが 0 の条件を書いてみよう\nif ... then\n    return BLACK\nelse\n    return WHITE\nend',
-		targetCode: 'if (x + y) % 2 == 0 then\n    return BLACK\nelse\n    return WHITE\nend'
-	},
-	{
-		id: '9',
-		title: 'problem_9_title',
-		description: 'problem_9_desc',
-		initialCode:
-			'-- 絶対値 abs(x) と abs(y) の合計が 4 以下の条件を書いてみよう\nif ... then\n    return BLACK\nelse\n    return WHITE\nend',
-		targetCode: 'if abs(x) + abs(y) <= 4 then\n    return BLACK\nelse\n    return WHITE\nend'
-	},
-	{
-		id: '10',
-		title: 'problem_10_title',
-		description: 'problem_10_desc',
-		initialCode:
-			'-- 距離の2乗 (x*x + y*y) が 4 以下の条件を書いてみよう\nif ... then\n    return RED\nelse\n    return TRANSPARENT\nend',
-		targetCode: 'if x*x + y*y <= 4 then\n    return RED\nelse\n    return TRANSPARENT\nend'
+// Viteの機能を使って、同ディレクトリ内の .md ファイルをすべて読み込む
+const rawModules = import.meta.glob('./problems/*.md', { query: '?raw', eager: true });
+
+function parseMarkdown(content: string): Problem {
+	const frontmatterMatch = content.match(/^---([\s\S]*?)---/);
+	if (!frontmatterMatch) throw new Error('Frontmatter not found');
+
+	const yamlStr = frontmatterMatch[1];
+	const metadata: any = {};
+
+	// 簡易的なYAMLパース（id, title, description）
+	const lines = yamlStr.split('\n');
+	let currentKey = '';
+	for (const line of lines) {
+		const kvMatch = line.match(/^(\w+):\s*(.*)$/);
+		if (kvMatch) {
+			const key = kvMatch[1];
+			const val = kvMatch[2].trim();
+			if (val) {
+				metadata[key] = val.replace(/^['"](.*)['"]$/, '$1'); // クォート除去
+			} else {
+				currentKey = key;
+				metadata[key] = {};
+			}
+		} else if (currentKey && line.startsWith('  ')) {
+			const subKvMatch = line.trim().match(/^(\w+):\s*(.*)$/);
+			if (subKvMatch) {
+				metadata[currentKey][subKvMatch[1]] = subKvMatch[2].trim().replace(/^['"](.*)['"]$/, '$1');
+			}
+		}
 	}
-];
+
+	// コードブロックの抽出
+	const codes: { [key: string]: string } = {};
+	const codeBlockRegex = /```\w+[:\s](\w+)\s*([\s\S]*?)```/g;
+	let match;
+	while ((match = codeBlockRegex.exec(content)) !== null) {
+		codes[match[1]] = match[2].trim();
+	}
+
+	// ルール: 名前なしのコードブロックが2つある場合、1つ目を initial, 2つ目を target とする fallback
+	if (!codes.initial || !codes.target) {
+		const simpleBlocks = [...content.matchAll(/```\w+\s*([\s\S]*?)```/g)];
+		if (simpleBlocks.length >= 2) {
+			if (!codes.initial) codes.initial = simpleBlocks[0][1].trim();
+			if (!codes.target) codes.target = simpleBlocks[1][1].trim();
+		}
+	}
+
+	return {
+		id: metadata.id || 'unknown',
+		difficulty: parseInt(metadata.difficulty) || 0,
+		title: metadata.title,
+		description: metadata.description,
+		initialCode: codes.initial || '',
+		targetCode: codes.target || ''
+	};
+}
+
+const parsedProblems = Object.entries(rawModules)
+	.map(([path, module]) => {
+		try {
+			const content = (module as any).default;
+			return parseMarkdown(content);
+		} catch (e) {
+			console.error(`Failed to parse ${path}:`, e);
+			return null;
+		}
+	})
+	.filter((p): p is Problem => p !== null)
+	.sort((a, b) => a.difficulty - b.difficulty);
+
+export const problems: Problem[] = parsedProblems;
