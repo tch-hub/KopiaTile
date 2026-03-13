@@ -3,13 +3,14 @@ import LuaWorker from './lua.worker?worker';
 
 export class LuaPixelEngine implements PixelEngine {
 	private worker: Worker | null = null;
-	private compilePromiseResolver: { resolve: () => void; reject: (err: any) => void } | null = null;
+	private compilePromiseResolver: { resolve: () => void; reject: (err: unknown) => void } | null =
+		null;
 	private evaluatePromiseResolver: {
 		resolve: (res: number[][]) => void;
-		reject: (err: any) => void;
+		reject: (err: unknown) => void;
 	} | null = null;
 	private isCompiling: boolean = false;
-	private evaluateTimeoutId: any = null;
+	private evaluateTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 	constructor() {
 		this.initWorker();

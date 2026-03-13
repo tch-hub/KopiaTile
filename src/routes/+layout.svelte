@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { base } from '$app/paths';
 	import { locales, localizeHref } from '$lib/paraglide/runtime';
 	import Header from '$lib/components/Header.svelte';
 	import Footer from '$lib/components/Footer.svelte';
@@ -16,7 +15,7 @@
 		const b = APP_BASE_PATH;
 
 		// 1. パスからベースパスを剥がす
-		let cleanPath = rawPath;
+		let cleanPath: string = rawPath;
 		if (b && cleanPath.startsWith(b)) {
 			cleanPath = cleanPath.slice(b.length) || '/';
 		}

@@ -16,16 +16,18 @@ const config = {
 				// ja がベースになったため /en/ がロケール付きURLになる
 				// プリレンダリング時に発生する /en 系の404は許容する
 				const ignoredPaths = ['/en', '/en/', '/KopiaTile/en', '/KopiaTile/en/'];
-				if (ignoredPaths.some(p => path === p || path.endsWith(p))) {
+				if (ignoredPaths.some((p) => path === p || path.endsWith(p))) {
 					console.warn(`[PRERENDER WARNING] Ignored 404 for ${path} (linked from ${referrer})`);
 					return;
 				}
-				console.error(`[PRERENDER ERROR] Path: ${path}, Referrer: ${referrer}, Message: ${message}`);
+				console.error(
+					`[PRERENDER ERROR] Path: ${path}, Referrer: ${referrer}, Message: ${message}`
+				);
 				throw new Error(message);
 			}
 		},
 		paths: {
-			base: process.env.NODE_ENV === 'production' ? '/KopiaTile' : '',
+			base: process.env.NODE_ENV === 'production' ? '/KopiaTile' : ''
 		},
 		alias: {
 			'@/*': './src/lib/*'

@@ -11,8 +11,8 @@
 	}
 </script>
 
-<div class="mx-auto mt-auto w-full max-w-5xl px-4 pb-8">
-	<Separator class="my-8" />
+<div class="mx-auto mt-auto w-full max-w-5xl px-4 pb-4">
+	<Separator class="my-4" />
 
 	<div class="flex flex-col items-center justify-between gap-4 sm:flex-row">
 		<div class="flex items-center gap-4">

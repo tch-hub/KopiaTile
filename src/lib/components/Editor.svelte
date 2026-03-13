@@ -1,14 +1,16 @@
 <script lang="ts">
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import * as m from '$lib/paraglide/messages.js';
+	import { Code } from '@lucide/svelte';
 	import type * as Monaco from 'monaco-editor';
 
 	let {
 		code = $bindable(
 			'-- Write your KopiaTile Lua script here\n\nif y == 1 then\n  return 2\nend\nreturn 1\n'
 		),
-		error = null
-	} = $props<{ code?: string; error?: { line: number; message: string } | null }>();
+		error = null,
+		title = m.code_editor_title()
+	} = $props<{ code?: string; error?: { line: number; message: string } | null; title?: string }>();
 
 	let editorContainer: HTMLDivElement | null = $state(null);
 	let editor: Monaco.editor.IStandaloneCodeEditor | null = $state(null);
@@ -135,7 +137,7 @@
 
 			editor.onDidChangeModelContent(() => {
 				if (isSettingValue) return; // 外部setValueによるイベントは無視
-				const currentCode = editor?.getValue() || ''
+				const currentCode = editor?.getValue() || '';
 				code = currentCode;
 
 				if (editor && monaco) {
@@ -224,19 +226,21 @@
 	});
 </script>
 
-<div class="flex flex-col space-y-3">
-	<div class="flex items-center justify-between">
-		<h2 class="text-sm font-semibold tracking-wider text-muted-foreground uppercase">
-			{m.code_editor_title()}
-		</h2>
-	</div>
-
+<div class="flex h-full flex-col">
 	<div
-		class="relative flex h-[400px] w-full flex-col overflow-hidden rounded-lg border bg-card shadow-sm"
+		class="relative flex w-full flex-1 flex-col overflow-hidden rounded-lg border bg-card shadow-sm"
 	>
 		<!-- Editor Header -->
-		<div class="z-10 flex h-10 items-center border-b bg-muted/50 px-4">
-			<span class="font-mono text-xs text-muted-foreground/80">script.lua</span>
+		<div class="z-10 flex h-10 items-center justify-between border-b bg-muted/50 px-4">
+			<div class="flex items-center gap-2">
+				<Code class="h-4 w-4 text-muted-foreground/70" />
+				<span class="text-xs font-bold tracking-wider text-muted-foreground uppercase">
+					{title}
+				</span>
+			</div>
+			<span class="font-mono text-[10px] tracking-widest text-muted-foreground/60 uppercase"
+				>script.lua</span
+			>
 		</div>
 		<!-- Monaco DOM Container -->
 		<div bind:this={editorContainer} class="w-full flex-1"></div>

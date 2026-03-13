@@ -55,8 +55,9 @@ end
 `;
 			await lua.doString(wrappedCode);
 			postMessage({ type: 'compile_success' });
-		} catch (err: any) {
-			postMessage({ type: 'compile_error', error: err.message || String(err) });
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : String(err);
+			postMessage({ type: 'compile_error', error: message });
 		}
 	} else if (data.type === 'evaluateAll') {
 		try {
@@ -85,8 +86,9 @@ end
 			}
 
 			postMessage({ type: 'evaluate_success', result: grid });
-		} catch (err: any) {
-			postMessage({ type: 'evaluate_error', error: err.message || String(err) });
+		} catch (err: unknown) {
+			const message = err instanceof Error ? err.message : String(err);
+			postMessage({ type: 'evaluate_error', error: message });
 		}
 	}
 });

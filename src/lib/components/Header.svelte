@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button/index.js';
-	import { Sun, Moon } from '@lucide/svelte';
+	import { Sun, Moon, ListTodo, FileText } from '@lucide/svelte';
 	import { onMount } from 'svelte';
+	import { uiState } from '$lib/states.svelte';
+	import * as m from '$lib/paraglide/messages.js';
 
 	let isDarkMode = $state(false);
 
@@ -35,12 +37,33 @@
 		</div>
 		KopiaTile
 	</div>
-	<Button variant="ghost" size="icon" onclick={toggleTheme}>
-		{#if isDarkMode}
-			<Moon class="h-5 w-5 text-muted-foreground" />
-		{:else}
-			<Sun class="h-5 w-5 text-muted-foreground" />
-		{/if}
-		<span class="sr-only">Toggle theme</span>
-	</Button>
+	<div class="flex items-center gap-2">
+		<Button
+			variant="ghost"
+			size="sm"
+			class="flex items-center gap-2"
+			onclick={() => (uiState.isProblemSidebarOpen = true)}
+		>
+			<ListTodo class="h-4 w-4" />
+			<span class="hidden sm:inline">{m.problem_list_title()}</span>
+		</Button>
+		<Button
+			variant="ghost"
+			size="sm"
+			class="flex items-center gap-2"
+			onclick={() => (uiState.isDocsOpen = true)}
+		>
+			<FileText class="h-4 w-4" />
+			<span class="hidden sm:inline">{m.documentation()}</span>
+		</Button>
+		<div class="mx-2 h-4 w-px bg-border"></div>
+		<Button variant="ghost" size="icon" onclick={toggleTheme}>
+			{#if isDarkMode}
+				<Moon class="h-5 w-5 text-muted-foreground" />
+			{:else}
+				<Sun class="h-5 w-5 text-muted-foreground" />
+			{/if}
+			<span class="sr-only">Toggle theme</span>
+		</Button>
+	</div>
 </header>
